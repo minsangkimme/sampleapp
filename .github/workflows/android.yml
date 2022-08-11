@@ -15,16 +15,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.3
-
-      # - name: Grant execute permission for graldew
-      #   run: chmod +x gradlew
-      - name: cd android
-        run: pwd && cd android
+      # - name: Build with Gradle init  
+      #   run: ./gradlew init
+      - name: Grant execute permission for graldew
+        run: chmod +x ./android/gradlew
 
       - name: Build wite Gradlew
         run: |
           pwd && ls -al
-          ./gradlew build
+          ./android/gradlew build
 
       - name: Assemble Release assemble
         run: |
