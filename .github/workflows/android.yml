@@ -18,16 +18,17 @@ jobs:
       # - name: Build with Gradle init  
       #   run: ./gradlew init
       - name: Grant execute permission for graldew
-        run: chmod +x ./android/gradlew
+        run: cd android && chmod +x ./gradlew
 
       - name: Build wite Gradlew
         run: |
           pwd && ls -al
-          ./android/gradlew build
+          cd android && ./gradlew build
 
       - name: Assemble Release assemble
         run: |
-          ./gradlew assembleRelease --stacktrace
+          pwd
+          cd android &&./gradlew assembleRelease --stacktrace
       - name: Sign Release
         uses: r0adkll/sign-android-release@v1
         with:
