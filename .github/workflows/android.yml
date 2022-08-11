@@ -18,6 +18,8 @@ jobs:
 
       # - name: Grant execute permission for graldew
       #   run: chmod +x gradlew
+      - name: cd android
+        run: cd android
 
       - name: Build wite Gradlew
         run: ./gradlew build
