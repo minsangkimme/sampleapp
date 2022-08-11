@@ -50,5 +50,5 @@ jobs:
         with:
           serviceAccountJson: service_account.json
           packageName: com.sampleapp
-          releaseFile: ./android/app/build/outputs/apk/release/app-release.apk
+          releaseFiles: ./android/app/build/outputs/apk/release/app-release.apk
           track: internal
