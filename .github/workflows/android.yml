@@ -15,8 +15,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.3
-      # - name: Build with Gradle init  
-      #   run: ./gradlew init
+      
+      - name: Run yarn install 🛠
+        run: yarn install
+
       - name: Grant execute permission for graldew
         run: cd android && chmod +x ./gradlew
 
@@ -30,6 +32,7 @@ jobs:
           pwd
           cd android &&./gradlew assembleRelease --stacktrace
       - name: Sign Release
+        run: pwd && cd android && ls -al
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: app/build/outputs/apk/release
@@ -39,9 +42,12 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
       - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+        run: |
+          pwd && cd android && ls -al
+          echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
       - name: Deploy to internal
+        run: pwd && cd android && ls -al
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: service_account.json
