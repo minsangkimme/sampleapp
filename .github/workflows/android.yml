@@ -28,23 +28,23 @@ jobs:
       - name: Build APK
         run: cd android && ./gradlew assembleRelease --stacktrace
 
-      - name: Upload Apk to slack
-        env: 
-          SLACK_TOKEN: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
-          SLACK_CHANNELS: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
-          FILE_PATH: '@app/build/outputs/apk/release/app-release.apk'
-        run: |
-          cd android
-          curl https://slack.com/api/files.upload -F token=$SLACK_TOKEN -F channels=$SLACK_CHANNELS -F file=$FILE_PATH
+      # - name: Upload Apk to slack
+      #   env: 
+      #     SLACK_TOKEN: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
+      #     SLACK_CHANNELS: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
+      #     FILE_PATH: '@app/build/outputs/apk/release/app-release.apk'
+      #   run: |
+      #     cd android
+      #     curl https://slack.com/api/files.upload -F token=$SLACK_TOKEN -F channels=$SLACK_CHANNELS -F file=$FILE_PATH
 
-      # - uses: MeilCli/slack-upload-file@v1
-      #   with:
-      #     slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
-      #     channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
-      #     file_path: 'android/app/build/outputs/apk/release/app-release.apk'
-      #     file_name: 'app-release.apk'
-      #     file_type: 'apk'
-      #     initial_comment: '${{ github.ref }} 테스트 앱 슬랙 배포 성공'
+      - uses: MeilCli/slack-upload-file@v1
+        with:
+          slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
+          channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
+          file_path: 'android/app/build/outputs/apk/release/app-release.apk'
+          file_name: 'app-release.apk'
+          file_type: 'apk'
+          initial_comment: '${{ github.ref }} 테스트 앱 슬랙 배포 성공'
 
       # - name: Sign Release
       #   uses: r0adkll/sign-android-release@v1
