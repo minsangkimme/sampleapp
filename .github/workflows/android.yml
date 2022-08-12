@@ -16,10 +16,6 @@ jobs:
         with:
           java-version: 11.0.3
 
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-
       - name: Run yarn install 🛠
         run: yarn install
 
@@ -32,7 +28,6 @@ jobs:
       - name: Build APK
         run: cd android && ./gradlew assembleRelease --stacktrace
 
-      - run: cd android && ./gradlew assembleRelease
       - uses: MeilCli/slack-upload-file@v1
         with:
           slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
