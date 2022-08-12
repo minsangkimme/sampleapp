@@ -39,7 +39,7 @@ jobs:
       - name: Deploy to internal
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          serviceAccountJson: pc-api-6603179784639153148-700-9057d738cdda.json
           packageName: com.sampleapp
           releaseFiles: ./android/app/build/outputs/apk/release/app-release.apk
           track: internal
