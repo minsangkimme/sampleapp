@@ -1,4 +1,4 @@
-name: Deploy to internal test
+name: Deploy to Slack (internal test)
 
 on:
   push:
@@ -15,7 +15,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11.0.3
-      
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
       - name: Run yarn install 🛠
         run: yarn install
 
@@ -25,21 +29,41 @@ jobs:
       - name: Build wite Gradlew
         run: cd android && ./gradlew build
 
-      - name: Assemble Release assemble
+      - name: Build APK
         run: cd android && ./gradlew assembleRelease --stacktrace
-      - name: Sign Release
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: ./android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }} 
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Deploy to internal
-        uses: r0adkll/upload-google-play@v1
+      - name: build result to slack
+        uses: 8398a7/action-slack@v3
         with:
-          serviceAccountJson: pc-api-6603179784639153148-700-9057d738cdda.json
-          packageName: com.sampleapp
-          releaseFiles: ./android/app/build/outputs/apk/release/app-release.apk
-          track: internal
+          status: ${{job.status}}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+
+      - run: './gradlew assembleRelease'
+      - uses: MeilCli/slack-upload-file@v1
+        with:
+          slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
+          channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
+          file_path: './android/app/build/outputs/apk/release/app-release.apk'
+          file_name: 'app-release.apk'
+          file_type: 'apk'
+          initial_comment: '${{ github.ref }} 테스트 앱 슬랙 배포 성공'
+
+      # - name: Sign Release
+      #   uses: r0adkll/sign-android-release@v1
+      #   with:
+      #     releaseDirectory: ./android/app/build/outputs/apk/release
+      #     signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+      #     alias: ${{ secrets.ALIAS }} 
+      #     keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+      #     keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      # - name: Deploy to internal
+      #   uses: r0adkll/upload-google-play@v1
+      #   with:
+      #     serviceAccountJson: pc-api-6603179784639153148-700-9057d738cdda.json
+      #     packageName: com.sampleapp
+      #     releaseFiles: ./android/app/build/outputs/apk/release/app-release.apk
+      #     track: internal
