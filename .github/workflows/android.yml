@@ -28,6 +28,9 @@ jobs:
       - name: Build AAB
         run: cd android && ./gradlew bundleRelease --stacktrace
 
+      - name: Check AAB File
+        run: cd ./android/app/build/outputs/bundle/release && ls -al
+
       - name: Sign Release
         uses: r0adkll/sign-android-release@v1
         with:
@@ -58,10 +61,6 @@ jobs:
       #   env:
       #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
           
-
-      - name: Check AAB File
-        run: cd ./android/app/build/outputs/bundle/release && ls -al
-
       - name: Deploy to internal
         uses: r0adkll/upload-google-play@v1
         with:
