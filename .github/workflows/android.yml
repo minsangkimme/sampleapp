@@ -26,13 +26,22 @@ jobs:
         run: cd android && ./gradlew build
 
       - name: Build APK
-        run: cd android && ./gradlew assembleDebug --stacktrace
+        run: cd android && ./gradlew assembleRelease --stacktrace
 
-      - name: Upload Apk to slack
+      - name: Sign Release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: ./android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }} 
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload Apk to Slack
         env: 
           SLACK_TOKEN: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
           SLACK_CHANNELS: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
-          FILE_PATH: '@app/build/outputs/apk/debug/app-debug.apk'
+          FILE_PATH: '@app/build/outputs/apk/release/app-release.apk'
         run: |
           cd android
           curl https://slack.com/api/files.upload -F token=$SLACK_TOKEN -F channels=$SLACK_CHANNELS -F file=$FILE_PATH
@@ -45,28 +54,12 @@ jobs:
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           channel-id: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
           # For posting a simple plain text message
-          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          slack-message: "APK 빌드 완료~!😄"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
           
 
-      # - uses: MeilCli/slack-upload-file@v1
-      #   with:
-      #     slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
-      #     channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
-      #     file_path: 'android/app/build/outputs/apk/debug/app-debug.apk'
-      #     file_name: 'app-debug.apk'
-      #     file_type: 'apk'
-      #     initial_comment: '${{ github.ref }} 테스트 앱 슬랙 배포 성공'
-
-      # - name: Sign Release
-      #   uses: r0adkll/sign-android-release@v1
-      #   with:
-      #     releaseDirectory: ./android/app/build/outputs/apk/release
-      #     signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-      #     alias: ${{ secrets.ALIAS }} 
-      #     keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-      #     keyPassword: ${{ secrets.KEY_PASSWORD }}
+     
 
       # - name: Deploy to internal
       #   uses: r0adkll/upload-google-play@v1
