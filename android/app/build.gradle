@@ -225,7 +225,7 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('./swat.jks')
+            storeFile file('./test.jks')
             storePassword 'test1234'
             keyAlias 'test'
             keyPassword 'test1234'
